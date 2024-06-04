@@ -64,20 +64,15 @@ def main():
         for platform in platforms:
             if (
                 player.position.y + PLAYER_RADIUS > platform.position.y
-                and player.position.y - PLAYER_RADIUS
+                and player.position.y + PLAYER_RADIUS
                 < platform.position.y + PLATFORM_HEIGHT
+                and player.position.x + PLAYER_RADIUS > platform.position.x
+                and player.position.x - PLAYER_RADIUS
+                < platform.position.x + PLATFORM_WIDTH
             ):
                 player.on_ground = True
                 player.velocity.y = 0
                 player.position.y = platform.position.y - PLAYER_RADIUS
-
-            # Add this block to handle horizontal collision
-            if (
-                player.position.x + PLAYER_RADIUS > platform.position.x
-                and player.position.x - PLAYER_RADIUS
-                < platform.position.x + PLATFORM_WIDTH
-            ):
-                player.velocity.x = 0
 
         # Draw everything
         raylibpy.begin_drawing()
