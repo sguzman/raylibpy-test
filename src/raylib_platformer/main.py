@@ -32,8 +32,13 @@ platforms = [Platform(200, 400), Platform(400, 300), Platform(600, 200)]
 def main():
     raylibpy.init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Platformer")
     raylibpy.set_target_fps(60)
+    global player
 
     while not raylibpy.window_should_close():
+        # Reset scene
+        if raylibpy.is_key_pressed(raylibpy.KEY_R):
+            player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
         # Player movement
         if raylibpy.is_key_down(raylibpy.KEY_A):
             player.velocity.x = -5
@@ -59,15 +64,20 @@ def main():
         for platform in platforms:
             if (
                 player.position.y + PLAYER_RADIUS > platform.position.y
-                and player.position.y + PLAYER_RADIUS
+                and player.position.y - PLAYER_RADIUS
                 < platform.position.y + PLATFORM_HEIGHT
-                and player.position.x + PLAYER_RADIUS > platform.position.x
-                and player.position.x - PLAYER_RADIUS
-                < platform.position.x + PLATFORM_WIDTH
             ):
                 player.on_ground = True
                 player.velocity.y = 0
                 player.position.y = platform.position.y - PLAYER_RADIUS
+
+            # Add this block to handle horizontal collision
+            if (
+                player.position.x + PLAYER_RADIUS > platform.position.x
+                and player.position.x - PLAYER_RADIUS
+                < platform.position.x + PLATFORM_WIDTH
+            ):
+                player.velocity.x = 0
 
         # Draw everything
         raylibpy.begin_drawing()
