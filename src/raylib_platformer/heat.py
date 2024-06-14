@@ -27,12 +27,26 @@ def update_grid(grid):
     return new_grid
 
 
+def draw_slider(x, y, width, height, value, min_value, max_value):
+    mouse_x = raylibpy.get_mouse_x()
+    mouse_y = raylibpy.get_mouse_y()
+    if raylibpy.is_mouse_button_down(raylibpy.MOUSE_LEFT_BUTTON):
+        if x <= mouse_x <= x + width and y <= mouse_y <= y + height:
+            value = (mouse_x - x) / width * (max_value - min_value) + min_value
+    raylibpy.draw_rectangle(x, y, width, height, raylibpy.LIGHTGRAY)
+    slider_x = int(x + (value - min_value) / (max_value - min_value) * width)
+    raylibpy.draw_rectangle(slider_x - 5, y, 10, height, raylibpy.DARKGRAY)
+    return value
+
+
 def main():
     raylibpy.init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Heat Flow Simulation")
     raylibpy.set_target_fps(60)
 
     grid = create_grid()
     paused = False
+    speed = 0.5
+    last_update_time = 0
 
     while not raylibpy.window_should_close():
         if raylibpy.is_key_pressed(raylibpy.KEY_SPACE):
@@ -45,8 +59,13 @@ def main():
             grid_y = mouse_y // CELL_SIZE
             grid[grid_y][grid_x] = 1.0
 
-        if not paused:
+        # Control simulation speed with slider
+        speed = draw_slider(10, 50, 150, 20, speed, 0.1, 1.0)
+
+        current_time = raylibpy.get_time()
+        if not paused and current_time - last_update_time >= speed:
             grid = update_grid(grid)
+            last_update_time = current_time
 
         raylibpy.begin_drawing()
         raylibpy.clear_background(raylibpy.RAYWHITE)
@@ -54,13 +73,19 @@ def main():
         for y in range(GRID_HEIGHT):
             for x in range(GRID_WIDTH):
                 heat_value = grid[y][x]
-                color = raylibpy.Color(int(heat_value * 255), 0, 0, 255)
+                color = raylibpy.Color(
+                    int(heat_value * 255),
+                    int(heat_value * 64),
+                    int(heat_value * 64),
+                    255,
+                )
                 raylibpy.draw_rectangle(
                     x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE, color
                 )
 
         raylibpy.draw_text("Press SPACE to pause/resume", 10, 10, 20, raylibpy.GRAY)
         raylibpy.draw_text("Click to add heat", 10, 30, 20, raylibpy.GRAY)
+        raylibpy.draw_text(f"Speed: {round(speed, 2)}", 170, 50, 20, raylibpy.GRAY)
 
         raylibpy.end_drawing()
 
