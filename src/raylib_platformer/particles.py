@@ -5,7 +5,8 @@ import math
 # Game constants
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
-BALL_RADIUS = 5
+MIN_BALL_RADIUS = 5
+MAX_BALL_RADIUS = 10
 NUM_BALLS = 100
 GRAVITY = 0.1
 CONTAINER_RADIUS = SCREEN_WIDTH // 2 - 50
@@ -37,9 +38,10 @@ def dot_product(v1, v2):
 
 
 def spawn_ball(balls):
-    x = random.uniform(BALL_RADIUS, SCREEN_WIDTH - BALL_RADIUS)
-    y = random.uniform(BALL_RADIUS, SCREEN_HEIGHT - BALL_RADIUS)
-    balls.append(Ball(x, y, BALL_RADIUS))
+    x = random.uniform(MAX_BALL_RADIUS, SCREEN_WIDTH - MAX_BALL_RADIUS)
+    y = random.uniform(MAX_BALL_RADIUS, SCREEN_HEIGHT - MAX_BALL_RADIUS)
+    radius = random.uniform(MIN_BALL_RADIUS, MAX_BALL_RADIUS)
+    balls.append(Ball(x, y, radius))
 
 
 def update_ball(ball):
@@ -102,9 +104,9 @@ def main():
 
     balls = [
         Ball(
-            random.uniform(BALL_RADIUS, SCREEN_WIDTH - BALL_RADIUS),
-            random.uniform(BALL_RADIUS, SCREEN_HEIGHT - BALL_RADIUS),
-            BALL_RADIUS,
+            random.uniform(MAX_BALL_RADIUS, SCREEN_WIDTH - MAX_BALL_RADIUS),
+            random.uniform(MAX_BALL_RADIUS, SCREEN_HEIGHT - MAX_BALL_RADIUS),
+            random.uniform(MIN_BALL_RADIUS, MAX_BALL_RADIUS),
         )
         for _ in range(NUM_BALLS)
     ]
@@ -113,7 +115,8 @@ def main():
         if raylibpy.is_mouse_button_pressed(raylibpy.MOUSE_LEFT_BUTTON):
             mouse_x = raylibpy.get_mouse_x()
             mouse_y = raylibpy.get_mouse_y()
-            balls.append(Ball(mouse_x, mouse_y, BALL_RADIUS))
+            radius = random.uniform(MIN_BALL_RADIUS, MAX_BALL_RADIUS)
+            balls.append(Ball(mouse_x, mouse_y, radius))
 
         for ball in balls:
             update_ball(ball)
